@@ -15,7 +15,7 @@ class socketDistribute {
   }
 
   async connectWebSocket() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const userAgent = new UserAgent().toString();
       const wsOptions = this.proxy
         ? {
@@ -92,7 +92,7 @@ class socketDistribute {
           `WebSocket error for account ${this.currentNum}: ${error.message}`,
           "error"
         );
-        reject(error);
+        this.reconnectWebSocket();
       };
     });
   }
@@ -177,8 +177,19 @@ class socketDistribute {
       `Reconnecting WebSocket for provider: ${this.provider}`,
       "warning"
     );
-    setTimeout(() => {
-      this.connectWebSocket();
+
+    setTimeout(async () => {
+      try {
+        await this.connectWebSocket();
+      } catch (error) {
+        logMessage(
+          this.currentNum,
+          this.total,
+          `Reconnect failed: ${error.message}`,
+          "error"
+        );
+        this.reconnectWebSocket();
+      }
     }, 5000);
   }
 

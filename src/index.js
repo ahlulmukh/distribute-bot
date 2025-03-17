@@ -47,6 +47,8 @@ async function main() {
     }
   } catch (error) {
     logMessage(null, null, `Main process failed: ${error.message}`, "error");
+    console.log(chalk.red("Restarting in 5 seconds..."));
+    setTimeout(main, 5000);
   }
 }
 
